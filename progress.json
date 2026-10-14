@@ -25,12 +25,12 @@
     {
       "id": "5",
       "title": "마크다운 문제 임포터 + 샘플 검증",
-      "status": "doing"
+      "status": "done"
     },
     {
       "id": "6",
       "title": "MkDocs 사이트 + Pages 워크플로",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "7",
@@ -39,6 +39,7 @@
     }
   ],
   "notes": [
-    "study.py CLI 계약: serve, new-topic, add-questions, validate, import-md, record, stats [--json], due — 에이전트 문서가 이 이름을 씀"
+    "study.py CLI 계약: serve, new-topic, add-questions, validate, import-md, record, stats [--json], due — 에이전트 문서가 이 이름을 씀",
+    "샘플 import 결과: 226/236 (#23,80,81,134,138,224,231 원본 양쪽 다 깨짐, 3개 중복). 해설은 원본에 없음"
   ]
 }

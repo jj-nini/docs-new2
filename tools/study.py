@@ -460,7 +460,9 @@ def stem_key(stem: str) -> str:
     return normalize_text(re.sub(r"[^\w\s]", "", stem))[:300]
 
 
-def merge_questions(slug: str, new: list[dict], default_source: str = "generated") -> tuple[int, int]:
+def merge_questions(slug: str, new: list[dict], default_source: str = "generated",
+                    skip_invalid: bool = False) -> tuple[int, int]:
+    """새 문항을 검사해 병합한다. skip_invalid=False면 하나라도 틀리면 아무것도 저장하지 않는다."""
     bank = load_bank(slug)
     existing = {stem_key(q["stem"]) for q in bank["questions"]}
     num = next_id_num(bank)
@@ -477,7 +479,10 @@ def merge_questions(slug: str, new: list[dict], default_source: str = "generated
         q.setdefault("source", default_source)
         e, _ = validate_question(q, concept_ids)
         if e:
-            errors += e
+            if skip_invalid:
+                print(f"  건너뜀: {q.get('source')} — {'; '.join(x.split(': ', 1)[1] for x in e)}", file=sys.stderr)
+            else:
+                errors += e
             continue
         staged.append(q)
         existing.add(key)
@@ -494,7 +499,7 @@ def merge_questions(slug: str, new: list[dict], default_source: str = "generated
 
 Q_HEAD = re.compile(r"^#*\s*\**\s*QUESTION\s+(\d+)\s*\**\s*$", re.I)
 CHOICE = re.compile(r"^\s*[-*]?\s*\**([A-H])[.)]\**\s+(.*\S)\s*$")
-ANSWER = re.compile(r"^#*\s*\**\s*Correct Answer:?\s*\**:?\s*([A-H](?:\s*,?\s*[A-H])*)\s*$", re.I)
+ANSWER = re.compile(r"^#*\s*\**\s*Correct Answer:?\s*\**:?\s*([A-H]{1,8}(?:\s*,\s*[A-H])*)(?![A-Za-z])")
 EXPL = re.compile(r"^#*\s*\**\s*Explanation(?:/Reference)?:?\s*\**:?\s*$", re.I)
 URL = re.compile(r"https?://\S+")
 
@@ -569,7 +574,7 @@ def cmd_import_md(slug: str, files: list[str]) -> None:
     for f in files:
         path = Path(f)
         qs = parse_exam_md(path.read_text(encoding="utf-8"), path.name)
-        added, skipped = merge_questions(slug, qs, default_source=f"import:{path.name}")
+        added, skipped = merge_questions(slug, qs, default_source=f"import:{path.name}", skip_invalid=True)
         print(f"{path.name}: 인식 {len(qs)} · 추가 {added} · 중복 건너뜀 {skipped}")
         total_added += added
         total_skipped += skipped
