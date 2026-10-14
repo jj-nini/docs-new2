@@ -9,23 +9,25 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 
 ## 그룹 목록
 
-| 그룹 | 한 줄 요약 |
-|------|-----------|
-| [게이트웨이 vs 인터페이스 엔드포인트 vs PrivateLink](#vpc-endpoint-type) | 온프레미스나 피어 VPC에서 접근하면 인터페이스, 같은 VPC에서 S3·DynamoDB를 무료로 쓰면 게이트웨이 |
-| [VPC 피어링 vs Transit Gateway vs PrivateLink](#vpc-interconnect) | CIDR 중복이나 단방향 서비스 노출은 PrivateLink, 소수·대용량·최저 비용은 피어링, 다수·전이 라우팅은 TGW |
-| [프라이빗 VIF vs 퍼블릭 VIF vs 트랜짓 VIF](#dx-vif-type) | 도달 대상이 VPC(VGW/DXGW)인지, AWS 퍼블릭 엔드포인트인지, TGW인지로 고른다 |
-| [DX 게이트웨이 vs Transit Gateway](#dx-gateway-transit) | DXGW는 전이 라우터가 아니다. 리전 간 VPC 통신은 TGW 피어링, 광고 범위는 허용 프리픽스 |
-| [Resolver 인바운드 vs 아웃바운드](#resolver-direction) | 질의가 들어오는 방향이 기준이다. 온프레미스→AWS는 인바운드, AWS→온프레미스는 아웃바운드+규칙 |
-| [프라이빗 호스팅 영역 vs 퍼블릭 호스팅 영역](#dns-zone-scope) | PHZ는 연결된 VPC 안에서만 보인다. 외부 위임·도메인 이전은 퍼블릭 영역 |
-| [ALB vs NLB vs GWLB](#load-balancer-type) | 경로·쿠키·XFF는 ALB, 고정 IP·TCP/UDP·패스스루·PrivateLink는 NLB, 어플라이언스 삽입은 GWLB |
-| [CloudFront vs Global Accelerator vs Route 53 라우팅 정책](#global-traffic) | 캐싱·HTTP는 CloudFront, 고정 IP·비HTTP·빠른 장애 조치는 GA, DNS 기반 분산은 Route 53 |
-| [MACsec vs DX 위 IPsec VPN vs 인터넷 VPN](#dx-encryption) | 고속 전용 연결 + 최고 처리량 암호화는 MACsec, 호스티드·저속 회선은 VIF 위 IPsec |
-| [BGP 경로 제어: Local Pref 커뮤니티 vs AS_PATH vs 구체적 프리픽스](#bgp-traffic-steering) | 어느 방향의 트래픽을, 어느 VIF 종류에서 조절하는지로 도구가 정해진다 |
-| [Network Firewall vs GWLB vs 어플라이언스 모드](#inspection-insertion) | AZ를 넘는 트래픽만 끊기면 어플라이언스 모드, 서드파티는 GWLB, 관리형 IPS는 Network Firewall |
-| [TGW Connect vs VPN 어태치먼트 vs Direct Connect](#sdwan-hybrid) | SD-WAN + 고대역폭 + IPsec 불필요는 Connect(GRE), 저예산 백업·동적 라우팅은 VPN |
-| [Reachability Analyzer vs Route Analyzer vs Flow Logs vs Traffic Mirroring](#path-analysis-tools) | 구성 검증, TGW 경로, 흐름 메타데이터, 패킷 페이로드로 갈린다 |
-| [보안 그룹·NACL vs Network Firewall vs WAF·Shield](#filtering-layer) | 상태 저장 여부, 거부 가능 여부, 계층(L3/L4 vs L7)으로 고른다 |
-| [NAT 게이트웨이 vs IPAM·프라이빗 NAT vs PrivateLink](#nat-ip-exhaustion) | 포트 고갈과 IP 고갈을 구분하고, 중복 CIDR은 프라이빗 NAT나 PrivateLink |
+혼동 기록이 있는 그룹을 위에 두었다. 🔴 반복 오답, 🟡 한 번 틀렸거나 애매하게 맞힘. 본문 순서는 그대로다.
+
+| 그룹 | 내 기록 | 한 줄 요약 |
+|------|------|-----------|
+| [Resolver 인바운드 vs 아웃바운드](#resolver-direction) | 🔴 2회 혼동 (확신 오답 1) | 질의가 들어오는 방향이 기준이다. 온프레미스→AWS는 인바운드, AWS→온프레미스는 아웃바운드+규칙 |
+| [Network Firewall vs GWLB vs 어플라이언스 모드](#inspection-insertion) | 🔴 2회 혼동 (확신 오답 1) | AZ를 넘는 트래픽만 끊기면 어플라이언스 모드, 서드파티는 GWLB, 관리형 IPS는 Network Firewall |
+| [보안 그룹·NACL vs Network Firewall vs WAF·Shield](#filtering-layer) | 🔴 2회 혼동 (확신 오답 1) | 상태 저장 여부, 거부 가능 여부, 계층(L3/L4 vs L7)으로 고른다 |
+| [ALB vs NLB vs GWLB](#load-balancer-type) | 🟡 1회 혼동 (확신 오답 1) | 경로·쿠키·XFF는 ALB, 고정 IP·TCP/UDP·패스스루·PrivateLink는 NLB, 어플라이언스 삽입은 GWLB |
+| [BGP 경로 제어: Local Pref 커뮤니티 vs AS_PATH vs 구체적 프리픽스](#bgp-traffic-steering) | 🟡 1회 혼동 (찍어서 오답 1) | 어느 방향의 트래픽을, 어느 VIF 종류에서 조절하는지로 도구가 정해진다 |
+| [VPC 피어링 vs Transit Gateway vs PrivateLink](#vpc-interconnect) | 🟡 애매 정답 1 | CIDR 중복이나 단방향 서비스 노출은 PrivateLink, 소수·대용량·최저 비용은 피어링, 다수·전이 라우팅은 TGW |
+| [CloudFront vs Global Accelerator vs Route 53 라우팅 정책](#global-traffic) | 🟡 애매 정답 1 | 캐싱·HTTP는 CloudFront, 고정 IP·비HTTP·빠른 장애 조치는 GA, DNS 기반 분산은 Route 53 |
+| [NAT 게이트웨이 vs IPAM·프라이빗 NAT vs PrivateLink](#nat-ip-exhaustion) | 🟡 애매 정답 1 | 포트 고갈과 IP 고갈을 구분하고, 중복 CIDR은 프라이빗 NAT나 PrivateLink |
+| [게이트웨이 vs 인터페이스 엔드포인트 vs PrivateLink](#vpc-endpoint-type) | - | 온프레미스나 피어 VPC에서 접근하면 인터페이스, 같은 VPC에서 S3·DynamoDB를 무료로 쓰면 게이트웨이 |
+| [프라이빗 VIF vs 퍼블릭 VIF vs 트랜짓 VIF](#dx-vif-type) | - | 도달 대상이 VPC(VGW/DXGW)인지, AWS 퍼블릭 엔드포인트인지, TGW인지로 고른다 |
+| [DX 게이트웨이 vs Transit Gateway](#dx-gateway-transit) | - | DXGW는 전이 라우터가 아니다. 리전 간 VPC 통신은 TGW 피어링, 광고 범위는 허용 프리픽스 |
+| [프라이빗 호스팅 영역 vs 퍼블릭 호스팅 영역](#dns-zone-scope) | - | PHZ는 연결된 VPC 안에서만 보인다. 외부 위임·도메인 이전은 퍼블릭 영역 |
+| [MACsec vs DX 위 IPsec VPN vs 인터넷 VPN](#dx-encryption) | - | 고속 전용 연결 + 최고 처리량 암호화는 MACsec, 호스티드·저속 회선은 VIF 위 IPsec |
+| [TGW Connect vs VPN 어태치먼트 vs Direct Connect](#sdwan-hybrid) | - | SD-WAN + 고대역폭 + IPsec 불필요는 Connect(GRE), 저예산 백업·동적 라우팅은 VPN |
+| [Reachability Analyzer vs Route Analyzer vs Flow Logs vs Traffic Mirroring](#path-analysis-tools) | - | 구성 검증, TGW 경로, 흐름 메타데이터, 패킷 페이로드로 갈린다 |
 
 ---
 
@@ -81,6 +83,8 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 - "몇 개 VPC + 월 수십 TB 전송 + 최저 비용" → **VPC 피어링**. TGW는 GB당 처리 요금이 붙는다.
 - "VPC가 계속 늘어난다", "온프레미스 연결을 여러 VPC가 공유", "전이 라우팅" → **Transit Gateway**.
 - "다른 회사(계정)의 TGW와 연결, 최소 변경" → **TGW 피어링 어태치먼트**(계정 간 가능). TGW 사이에 VPN을 새로 거는 선택지는 과하다.
+
+**내 기록**: 혼동 0회, 애매 정답 1 — 마지막 2026-10-14
 
 ??? question "셀프 체크 (클릭해서 정답 보기)"
     Q1. 인수한 회사의 VPC가 우리 VPC와 같은 10.0.0.0/16을 쓴다. 우리 쪽 앱이 저쪽 API 하나만 호출하면 된다. 재배포 없이 가장 간단한 방법은?
@@ -162,9 +166,13 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 | 온프레미스 쪽 설정 | 조건부 전달자 → 인바운드 엔드포인트 IP | 없음(온프레미스 DNS가 질의를 받기만 함) |
 | AWS 쪽 설정 | 엔드포인트(ENI)만 | 엔드포인트 + **전달 규칙(도메인 → 대상 IP)** + VPC 연결 |
 | 다계정 확장 | 중앙 VPC 하나 | 규칙을 **RAM으로 공유**, 각 VPC에 연결 |
+| Resolver 규칙 | **붙일 수 없다** | 전달 규칙은 반드시 아웃바운드 엔드포인트를 지정한다 |
 
 **판별 규칙**
 
+- **Resolver 규칙(전달 규칙)은 아웃바운드 엔드포인트에만 연결된다.** "인바운드 엔드포인트를 대상으로 하는 Resolver 규칙" 선택지는 존재하지 않는 구성이라 무조건 오답이다.
+- 온프레미스 → AWS 방향의 설정은 **온프레미스 DNS 서버**(조건부 전달자)에서 한다. AWS 쪽은 인바운드 엔드포인트를 만들기만 한다.
+- 양방향 복수 선택은 방향마다 한 쌍씩 고른다: (인바운드 엔드포인트 + 온프레미스 전달자), (아웃바운드 엔드포인트 + 온프레미스 도메인 전달 규칙). 한쪽을 고치다 다른 쪽이 빠지지 않게 쌍으로 확인한다.
 - "VPC 워크로드가 온프레미스 도메인 이름을 해석" → **아웃바운드 + 전달 규칙만**. 인바운드까지 함께 만드는 선택지는 "최소 관리" 조건에서 오답이다.
 - "사무실(온프레미스)에서 PHZ 이름으로 접근" → **인바운드 엔드포인트 + 온프레미스 조건부 전달자**. VPC의 .2 리졸버 IP로 직접 전달하는 선택지는 오답이다(VPC 밖에서 닿지 않는다).
 - "양방향", "AWS와 온프레미스가 서로의 이름을 해석" → **둘 다**.
@@ -172,12 +180,17 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 - EC2 기반 BIND 포워더를 늘리는 선택지 → "최소 관리", "가장 확장성 있게" 조건에서 오답.
 - "모든 질의를 온프레미스 보안 DNS로, 단 AWS 서비스 도메인은 제외" → 아웃바운드 + "." 전달 규칙 + amazonaws.com **시스템 규칙**.
 
+**내 기록**: 2회 혼동 (확신 오답 1) — 마지막 2026-10-14
+
 ??? question "셀프 체크 (클릭해서 정답 보기)"
     Q1. 온프레미스 DNS 서버가 corp.aws.internal(PHZ) 질의를 AWS로 보내야 한다. 무엇을 만드는가?
     → **Resolver 인바운드 엔드포인트**. 온프레미스 DNS에 그 IP로 가는 조건부 전달자를 설정한다.
 
     Q2. 30개 계정의 VPC가 모두 onprem.example.com을 해석해야 한다. 엔드포인트를 계정마다 만들어야 하는가?
     → **아니다**. 중앙 VPC에 아웃바운드 엔드포인트와 전달 규칙을 만들고, 규칙을 RAM으로 공유해 각 VPC에 연결한다.
+
+    Q3. 온프레미스가 PHZ 이름을 조회하게 하려고 "인바운드 엔드포인트로 보내는 Resolver 규칙"을 만들었다. 동작하는가?
+    → **아니다**. 그런 규칙은 만들 수 없다. 규칙은 VPC에서 나가는 질의용(아웃바운드)이다. 들어오는 질의는 온프레미스 DNS의 조건부 전달자가 인바운드 엔드포인트 IP로 보낸다.
 
 ---
 
@@ -228,6 +241,9 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 
 **판별 규칙**
 
+- 먼저 **L7 요구**(경로·호스트 라우팅, 쿠키, HTTPS 종료)가 있는지 본다. 하나라도 있으면 NLB는 탈락이다.
+- "HTTPS 종료 + 경로 기반 라우팅 + 클라이언트 IP" → **ALB + X-Forwarded-For**. "클라이언트 IP 보존 = NLB"라는 연상이 경로 라우팅 조건을 덮지 않게 한다.
+- NLB의 클라이언트 IP 보존이 정답 신호가 되는 것은 **L4 요구**(TCP/UDP, TLS 패스스루, 고정 IP)일 때뿐이다.
 - "URL 경로별로 다른 서비스", "쿠키 세션", "HTTPS 오프로드 + 클라이언트 IP" → **ALB + XFF**.
 - "온프레미스 서버를 타깃으로 + 클라이언트 IP를 끝까지" → **NLB + Proxy Protocol v2**. NLB에 XFF를 켠다는 선택지는 존재하지 않는 기능이다.
 - "중간 복호화 금지", "애플리케이션 인증서로 종단 간 암호화" → **NLB TCP 443 리스너(패스스루)**. ALB HTTPS나 CloudFront는 중간에서 복호화한다.
@@ -236,6 +252,8 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 - "서드파티 방화벽 플릿을 로드 밸런서 뒤에", "투명 삽입" → **GWLB**.
 - "Traffic Mirroring 대상의 확장성" → **NLB**(UDP 4789 VXLAN). ALB는 미러 대상이 될 수 없다.
 - "서브넷 IP가 부족" → NLB(/28 서브넷) 쪽이 ALB보다 IP를 덜 쓴다. 두 AZ 배치는 기본이다.
+
+**내 기록**: 1회 혼동 (확신 오답 1), 재시도 정답 1 — 마지막 2026-10-14
 
 !!! note "덤프 정답과 최신 기능"
     mTLS(상호 TLS) 문항의 덤프 정답은 NLB TCP 패스스루다. ALB도 2023년 말부터 mTLS를 지원한다 (확인 필요: 기출이 어느 시점 기준인지). 시험에서는 "백엔드가 직접 인증" 문구가 있으면 NLB 패스스루를 고른다.
@@ -246,6 +264,9 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 
     Q2. 웹 앱의 /api는 서비스 A로, /img는 서비스 B로 보내야 한다. 어떤 로드 밸런서인가?
     → **ALB**의 경로 기반 라우팅. NLB에는 경로 라우팅이 없다.
+
+    Q3. HTTPS를 로드 밸런서에서 종료하고 /admin은 별도 대상 그룹으로 보낸다. 백엔드 로그에 실제 사용자 IP가 남아야 한다.
+    → **ALB + X-Forwarded-For**. 경로 라우팅과 HTTPS 종료가 L7 요구라서 NLB는 처음부터 후보가 아니다.
 
 ---
 
@@ -271,6 +292,8 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 - "롤아웃 중 리전별 트래픽 비율 조절 + 지터 최소화" → GA **트래픽 다이얼**.
 - "HTTPS 웹 콘텐츠 + 지연 감소 + 최저 비용" → **CloudFront**(ALB를 HTTPS 오리진으로).
 - "원거리 리전으로 패킷 손실" → GA로 백본 경유하거나, 가까운 리전에 배포 + **Route 53 지연 시간 정책**. 둘 다 정답인 복수 선택 문항이 있다.
+
+**내 기록**: 혼동 0회, 애매 정답 1 — 마지막 2026-10-14
 
 ??? question "셀프 체크 (클릭해서 정답 보기)"
     Q1. 전 세계 UDP 게임 서버(3개 리전)에 플레이어가 고정 IP로 접속해야 하고, 리전 장애 시 수 초 안에 전환해야 한다.
@@ -335,6 +358,12 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 - "같은 프리픽스를 DX와 VPN이 모두 광고" → **DX 우선**. VPN을 주 경로로 쓰려면 VPN 쪽에 더 구체적인 프리픽스를 광고해야 한다.
 - "VPC 라우팅이 이상하다 + 온프레미스가 수백 개 프리픽스 광고" → 프라이빗 VIF **프리픽스 100개 제한** 초과. 요약(summarize)이 정답.
 - "VPN 두 터널이 비대칭으로 동작해 응답이 버려진다 + 대역폭 유지" → 고객 장비에서 **비대칭 라우팅 허용**. AS_PATH로 한 터널만 쓰게 하면 대역폭이 줄어든다.
+- "DX 두 회선 중 하나를 보조로"(양방향) 복수 선택 → **방향마다 하나씩** 고른다. AWS→온프레미스는 온프레미스가 광고하는 경로의 7224 커뮤니티(주 7300, 보조 7100), 온프레미스→AWS는 온프레미스 라우터가 AWS에서 받은 경로의 Local Pref(주 회선을 더 높게).
+
+!!! tip "방향 뒤집힘 방지"
+    두 도구 모두 **숫자가 높을수록 주 경로**다. 그리고 "누가 결정하나"로 방향을 고정한다. AWS가 내보낼 길은 온프레미스가 붙인 커뮤니티로 AWS가 정하고, 온프레미스가 내보낼 길은 온프레미스가 자기 Local Pref로 정한다.
+
+**내 기록**: 1회 혼동 (찍어서 오답 1), 재시도 애매 정답 1 — 마지막 2026-10-14
 
 ??? question "셀프 체크 (클릭해서 정답 보기)"
     Q1. DX 회선 2개(프라이빗 VIF)로 같은 프리픽스를 광고한다. AWS가 회선 A를 주로 쓰게 하려면 A 쪽 경로에 어떤 커뮤니티를 붙이는가?
@@ -366,6 +395,11 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 - "VPC 피어링 구조 + 재설계 없이 IPS" → **분산 모델 Network Firewall**. 중앙 모델은 TGW가 필요하다.
 - "TGW로 중앙 검사" 복수 선택 → **라우팅 테이블 2개**(앱 VPC용: 기본 경로 → 검사 VPC / 검사 VPC용: 앱 VPC 경로 전파) + 검사 VPC에 방화벽 + **HOME_NET에 모든 VPC·온프레미스 CIDR**. 라우팅 테이블 1개 선택지는 오답.
 - "검사 트래픽 전부와 조치를 로깅" → Network Firewall 자체 로깅(**알림 + 흐름 로그**). VPC Flow Logs로 대신하는 선택지는 오답.
+- **보안 그룹에는 거부 규칙이 없다** → "차단·거부" 요구면 NACL, Network Firewall, GWLB 뒤 어플라이언스 중에서 고른다. "Lambda 등 자동화로 보안 그룹에 거부 규칙 추가" 선택지는 불가능한 구성이라 오답이다.
+- GWLB가 정답이 되는 신호: **서드파티·벤더 어플라이언스**, **대규모 검사**(플릿 확장·고가용성), **투명 삽입**(애플리케이션 변경 없이 경로 중간에 끼움), "트래픽이 떠나기(들어오기) 전에 모두 검사".
+- "검사(inspect)" 요구는 **경로 안 장비**를 뜻한다. Traffic Mirroring은 사본을 보는 것이라 차단을 못 하고, 보안 그룹은 패킷 내용을 못 본다.
+
+**내 기록**: 2회 혼동 (확신 오답 1) — 마지막 2026-10-14
 
 ??? question "셀프 체크 (클릭해서 정답 보기)"
     Q1. TGW 중앙 검사 VPC를 거치게 했더니 VPC A(AZ-a) ↔ VPC B(AZ-b) 트래픽만 끊긴다. 어디에 무엇을 켜는가?
@@ -373,6 +407,9 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 
     Q2. 이미 쓰는 서드파티 차세대 방화벽 이미지를 Auto Scaling 플릿으로 VPC 경로에 끼워 넣으려면?
     → **GWLB**(+ GWLB 엔드포인트를 경로 대상으로).
+
+    Q3. 요구: "인터넷으로 나가는 모든 트래픽을 기존 벤더 IPS로 검사한 뒤 내보낸다." 선택지에 "Lambda가 위협 IP를 보안 그룹 거부 규칙으로 추가"가 있다. 고를 것인가?
+    → **아니다**. 보안 그룹에는 거부 규칙이 없고, 사후 차단 목록은 인라인 검사가 아니다. 정답은 **GWLB + 벤더 어플라이언스**다.
 
 ---
 
@@ -452,6 +489,7 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 
 **판별 규칙**
 
+- "차단", "거부", "악성 IP 막기" → **보안 그룹은 후보에서 뺀다**(허용 규칙만 있다). IP 거부는 NACL, 내용·도메인 기반 차단은 Network Firewall, 서드파티 인라인 검사는 GWLB + 어플라이언스, 웹 요청 차단은 WAF.
 - "NACL 인바운드 80은 허용, 아웃바운드는 없음, 응답이 안 온다" → **NACL 아웃바운드에 1024-65535**. 보안 그룹 아웃바운드를 고치는 선택지는 오답(SG는 상태 저장).
 - Flow Logs에 인바운드 ACCEPT, 아웃바운드 REJECT → **NACL 아웃바운드**가 원인. 둘 다 ACCEPT인데 안 되면 다른 곳을 본다.
 - "ALB는 CloudFront에서 온 트래픽만, 네트워크 계층에서, 가장 운영 효율적" → **ALB 보안 그룹에 CloudFront 관리형 프리픽스 리스트**. NACL은 프리픽스 리스트를 참조하지 못한다. 커스텀 헤더 + WAF는 애플리케이션 계층 방식이다.
@@ -459,6 +497,8 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 - "DDoS + 확장 비용 보호" → **Shield Advanced**. "웹 요청의 보안 위협" → **WAF**.
 - "조직 전체 계정에 정책 강제" → **Firewall Manager**(AWS Config 필요).
 - 특정 포트 연결 실패 진단에서 NACL, SG, 기업 방화벽이 함께 나오면 → 상태 저장(SG)은 인바운드만, 상태 비저장(NACL)은 양방향을 확인한다.
+
+**내 기록**: 2회 혼동 (확신 오답 1) — 마지막 2026-10-14
 
 ??? question "셀프 체크 (클릭해서 정답 보기)"
     Q1. 서브넷 NACL이 인바운드 TCP 443 허용, 아웃바운드 규칙 없음이다. 보안 그룹은 인바운드 443 허용이다. 무엇을 추가하는가?
@@ -488,6 +528,8 @@ ANS-C01 기출에서 정답과 오답 선택지로 자주 맞붙는 개념 묶�
 - "앱이 스케일 아웃해도 상대 허용 목록을 바꾸지 않게" → **프라이빗 NAT 게이트웨이**로 소스 IP 고정.
 - "IP 사용률을 미리 알림받고 싶다, 최소 운영" → **VPC IPAM 풀 + 알림**. Lambda로 직접 세는 선택지는 운영 부담이 크다.
 - "고객과 CIDR 중복 + 서비스 하나만 노출" → **PrivateLink**. 피어링 + NAT 조합은 오답.
+
+**내 기록**: 혼동 0회, 애매 정답 1 — 마지막 2026-10-14
 
 ??? question "셀프 체크 (클릭해서 정답 보기)"
     Q1. 프라이빗 서브넷 EC2 수백 대가 같은 외부 API로 연결하다가 실패하고, NAT 게이트웨이 ErrorPortAllocation이 오른다. IP 고갈인가?
