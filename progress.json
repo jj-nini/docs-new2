@@ -1,0 +1,42 @@
+{
+  "task": "study-service",
+  "goal": "키워드/URL/파일 → 로컬 퀴즈 풀이 + 개념·혼동·오답노트를 GitHub Pages로 공개하는 학습 하네스",
+  "steps": [
+    {
+      "id": "1",
+      "title": "저장소 골격·.gitignore·pyproject",
+      "status": "done"
+    },
+    {
+      "id": "2",
+      "title": "에이전트 5종 작성",
+      "status": "doing"
+    },
+    {
+      "id": "3",
+      "title": "오케스트레이터·보조 스킬 작성",
+      "status": "todo"
+    },
+    {
+      "id": "4",
+      "title": "로컬 웹 퀴즈 서버+UI (SRS 포함)",
+      "status": "todo"
+    },
+    {
+      "id": "5",
+      "title": "마크다운 문제 임포터 + 샘플 검증",
+      "status": "todo"
+    },
+    {
+      "id": "6",
+      "title": "MkDocs 사이트 + Pages 워크플로",
+      "status": "todo"
+    },
+    {
+      "id": "7",
+      "title": "E2E 검증 + 문서화",
+      "status": "todo"
+    }
+  ],
+  "notes": []
+}
