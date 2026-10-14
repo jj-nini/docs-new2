@@ -15,12 +15,12 @@
     {
       "id": "3",
       "title": "오케스트레이터·보조 스킬 작성",
-      "status": "doing"
+      "status": "done"
     },
     {
       "id": "4",
       "title": "로컬 웹 퀴즈 서버+UI (SRS 포함)",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "5",
