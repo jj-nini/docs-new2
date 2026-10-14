@@ -9,3 +9,9 @@
 - 작은 작업은 평소대로 한다. progress.json도 만들지 않는다.
 - progress.json은 직접 읽거나 편집하지 않고 `.claude/bin/progress.sh`로만 다룬다.
 - 한도 사용률이나 "중단된 큰 작업" 정보가 주어지면 `heavy-task` 스킬의 해당 항목을 따른다.
+
+## 학습 서비스
+- 학습 요청(새 주제, 문제 풀이, 오답노트, 노트 발행)은 `study` 스킬을 따른다. 구성은 README.md 참고.
+- `local/`(문제 은행·풀이 기록)과 `sources/`(원본 자료)는 비공개다. `docs/`에 문제 원문을 옮기지 않는다.
+- 노트를 고친 뒤에는 `uv run mkdocs build --strict`로 확인한다. `-q`를 붙이면 경고가 숨고 exit 0이 되므로 쓰지 않는다.
+- push는 사용자가 요청할 때만 한다.
