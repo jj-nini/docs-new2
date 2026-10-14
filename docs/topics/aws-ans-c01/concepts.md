@@ -79,7 +79,9 @@ active/passive나 active/active 설계, 특정 리전·회선 우선 문제의 �
 - **AWS→온프레미스 경로 선택 순서(프라이빗·트랜짓 VIF)**: 가장 긴 프리픽스 → Local Preference 커뮤니티 → AS_PATH 길이 → MED 순이다.
 - **Local Pref 커뮤니티**: `7224:7100` 낮음, `7224:7200` 중간, `7224:7300` 높음. AS_PATH보다 먼저 평가된다. 태그가 없으면 DX 로케이션과 같은 연관 리전(associated Region)을 우선한다.
 - 같은 커뮤니티·같은 AS_PATH 길이면 여러 VIF에 **ECMP** 로 분산한다(active/active).
-- **온프레미스→AWS 방향** 은 고객 라우터의 Local Pref로 정한다. AWS가 받는 쪽 경로를 유도하려면 **AS_PATH 프리펜드** 나 더 구체적인 프리픽스를 쓴다.
+- **AS_PATH 프리펜드·더 구체적인 프리픽스도 AWS→온프레미스 방향** 을 바꾸는 도구다. 온프레미스가 광고하는 경로에 적용하므로, AWS가 어느 회선으로 **보낼지** 가 바뀐다.
+- **온프레미스→AWS 방향** 은 고객 라우터 자신의 **Local Preference** 로 정한다. AWS 쪽 설정으로는 바꿀 수 없다.
+- `7224:7xxx` 커뮤니티는 DX 프라이빗·트랜짓 VIF 전용이다. TGW Connect(GRE+BGP)에서는 AS_PATH 프리펜드를 쓴다.
 - 같은 프리픽스를 DX와 VPN이 모두 광고하면 AWS는 DX 경로를 우선한다.
 - 퍼블릭 VIF에서 사설 ASN을 쓰면 AWS가 7224로 바꾸므로 프리펜드가 외부에 효과가 없다.
 
