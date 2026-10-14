@@ -49,6 +49,7 @@ AWS Certified Advanced Networking – Specialty(ANS-C01)의 핵심 개념 40개�
 | 보안(D4) | [DX 위 IPsec VPN](#vpn-over-dx) | ★★ |
 | 보안(D4) | [로드 밸런서 TLS·인증서](#elb-tls) | ★★ |
 | 보안(D4) | [WAF·Shield·Firewall Manager·DNS Firewall](#perimeter-protection) | ★ |
+| 보안(D4) | [Amazon GuardDuty](#guardduty) | ★★ |
 
 ---
 
@@ -577,3 +578,13 @@ SaaS나 공유 서비스를 다른 VPC·계정에 내보낼 때, 특히 **CIDR�
 - **Route 53 Resolver DNS Firewall**: VPC의 DNS 질의를 도메인 목록으로 차단·허용한다. 장애 시 동작을 **fail-open/fail-closed** 로 정한다(가용성 우선이면 fail-open).
 
 [헷갈리는 개념 → 필터링 계층](confusions.md#filtering-layer)
+
+### Amazon GuardDuty {#guardduty}
+
+**VPC Flow Logs, DNS 로그, CloudTrail 이벤트를 분석해 위협을 탐지하는 관리형 서비스다.**
+
+- 켜기만 하면 된다. Flow Logs를 따로 켜지 않아도 GuardDuty가 자체적으로 수집한다.
+- 탐지 예: 알려진 악성 IP·도메인과의 통신, 암호화폐 채굴, 포트 스캔, 비정상 API 호출.
+- 결과(finding)를 **EventBridge** 로 보내 Lambda 등으로 자동 대응(SG·NACL 차단)한다.
+- **탐지** 서비스다. 트래픽을 직접 막지 않는다. 차단은 [보안 그룹·NACL](#security-group-nacl), [Network Firewall](#network-firewall), [DNS Firewall](#perimeter-protection)이 한다.
+- Amazon Inspector(취약점 스캔), [Flow Logs](#vpc-flow-logs)(원시 메타데이터 기록)와 용도가 다르다.
