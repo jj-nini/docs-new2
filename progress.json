@@ -20,12 +20,12 @@
     {
       "id": "4",
       "title": "로컬 웹 퀴즈 서버+UI (SRS 포함)",
-      "status": "doing"
+      "status": "done"
     },
     {
       "id": "5",
       "title": "마크다운 문제 임포터 + 샘플 검증",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "6",

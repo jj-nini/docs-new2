@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로컬 퀴즈</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1f;--muted:#6b6b70;--line:#e2e2e0;--accent:#3a5bd9;--ok:#1f8a4c;--ok-bg:#e7f5ec;--bad:#c0392b;--bad-bg:#fbeaea;--sel:#e8edff}
+@media (prefers-color-scheme:dark){:root{--bg:#141416;--card:#1e1e22;--fg:#ececef;--muted:#9a9aa2;--line:#33333a;--accent:#7f9bff;--ok:#4cc27e;--ok-bg:#16301f;--bad:#ff7a6b;--bad-bg:#3a1c1a;--sel:#26304f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,"Segoe UI","Noto Sans KR",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 80px}
+h1{font-size:1.4rem;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+.muted{color:var(--muted);font-size:.9rem}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg);padding:8px 14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.topic{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-block;font-size:.8rem;padding:1px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--line);margin-right:4px}
+select,input[type=number],input[type=text]{font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.stem{white-space:pre-wrap;margin:8px 0 16px}
+.stem code{background:var(--bg);padding:0 4px;border-radius:4px}
+.choice{display:flex;gap:10px;width:100%;text-align:left;margin-bottom:8px;padding:10px 12px}
+.choice b{min-width:1.4em}
+.choice.selected{background:var(--sel);border-color:var(--accent)}
+.choice.correct{background:var(--ok-bg);border-color:var(--ok)}
+.choice.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.conf button{flex:1}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:8px 0 16px}
+.bar>div{height:100%;background:var(--accent);transition:width .2s}
+.fb{border-radius:10px;padding:14px;margin-top:12px;white-space:pre-wrap}
+.fb.ok{background:var(--ok-bg)} .fb.bad{background:var(--bad-bg)}
+.fb h3{margin:0 0 6px;font-size:1rem}
+table{border-collapse:collapse;width:100%} td,th{border-bottom:1px solid var(--line);padding:6px;text-align:left}
+kbd{font-size:.75rem;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:var(--muted)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+  <h1>로컬 퀴즈</h1>
+
+  <section id="home">
+    <div id="topics"></div>
+  </section>
+
+  <section id="quiz" class="hidden">
+    <div class="row muted"><span id="qpos"></span><span>·</span><span id="qtimer">0초</span><span style="flex:1"></span><button id="quit">끝내기</button></div>
+    <div class="bar"><div id="qbar"></div></div>
+    <div class="card">
+      <div class="muted" id="qmeta"></div>
+      <div class="stem" id="qstem"></div>
+      <div id="qchoices"></div>
+      <div id="qshort" class="hidden"><input type="text" id="qtext" placeholder="답 입력" style="width:100%"></div>
+      <div id="qconf" class="row conf" style="margin-top:12px">
+        <button data-c="sure">확실 <kbd>1</kbd></button>
+        <button data-c="unsure">애매 <kbd>2</kbd></button>
+        <button data-c="guess">찍음 <kbd>3</kbd></button>
+      </div>
+      <div class="muted" id="qhint" style="margin-top:6px">답을 고른 뒤 확신도를 누르면 채점됩니다.</div>
+      <div id="qfb"></div>
+      <div class="row" style="margin-top:12px"><span style="flex:1"></span><button id="next" class="primary hidden">다음 <kbd>Enter</kbd></button></div>
+    </div>
+  </section>
+
+  <section id="done" class="hidden"></section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code>$1</code>");
+const pct = v => v == null ? "-" : Math.round(v*100) + "%";
+const api = async (path, opt) => { const r = await fetch(path, opt); const j = await r.json(); if (!r.ok) throw new Error(j.error); return j; };
+
+let S = null; // {slug, title, mode, session, questions, i, selected, answered, results, t0}
+let timer = null;
+
+async function home() {
+  show("home");
+  const topics = await api("/api/topics");
+  $("#topics").innerHTML = topics.length ? topics.map(t => `
+    <div class="card">
+      <div class="topic">
+        <div><b>${esc(t.title)}</b> <span class="muted">${esc(t.topic)}</span><br>
+          <span class="pill">문항 ${t.questions}</span><span class="pill">새 문항 ${t.new}</span>
+          <span class="pill">오늘 복습 ${t.due_today}</span><span class="pill">현재 오답 ${t.wrong}</span>
+          <span class="pill">정답률 ${pct(t.accuracy)}</span></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <select data-k="mode">
+          <option value="due">추천 (복습→새 문항)</option><option value="new">새 문항만</option>
+          <option value="wrong">오답만</option><option value="random">무작위</option><option value="all">순서대로</option>
+        </select>
+        <select data-k="concept"><option value="">전체 개념</option>${t.concepts.map(c=>`<option>${esc(c)}</option>`).join("")}</select>
+        <input type="number" data-k="limit" value="10" min="1" max="300" style="width:80px"> 문항
+        <button class="primary" data-start="${esc(t.topic)}" data-title="${esc(t.title)}">시작</button>
+      </div>
+    </div>`).join("") : `<div class="card">주제가 없습니다. Claude Code에서 <code>/study &lt;키워드|URL|파일&gt;</code>로 만들어 주세요.</div>`;
+  document.querySelectorAll("[data-start]").forEach(b => b.onclick = () => {
+    const card = b.closest(".card"), v = k => card.querySelector(`[data-k=${k}]`).value;
+    start(b.dataset.start, b.dataset.title, v("mode"), v("concept"), v("limit"));
+  });
+}
+
+async function start(slug, title, mode, concept, limit) {
+  const q = new URLSearchParams({mode, limit, concept});
+  const data = await api(`/api/topics/${slug}/session?${q}`);
+  if (!data.questions.length) { alert("해당 조건의 문항이 없습니다."); return; }
+  S = {slug, title, mode, session: data.session, questions: data.questions, i: 0, results: []};
+  show("quiz"); render();
+}
+
+function render() {
+  const q = S.questions[S.i];
+  S.selected = new Set(); S.answered = false; S.t0 = Date.now();
+  clearInterval(timer); timer = setInterval(() => $("#qtimer").textContent = Math.round((Date.now()-S.t0)/1000)+"초", 1000);
+  $("#qtimer").textContent = "0초";
+  $("#qpos").textContent = `${S.i+1} / ${S.questions.length}`;
+  $("#qbar").style.width = (S.i / S.questions.length * 100) + "%";
+  const pick = q.type === "multi" ? ` · ${q.pick}개 고르기` : q.type === "short" ? " · 주관식" : "";
+  $("#qmeta").textContent = `${q.id}${q.domain ? " · " + q.domain : ""}${pick}`;
+  $("#qstem").innerHTML = md(q.stem);
+  $("#qfb").innerHTML = ""; $("#next").classList.add("hidden");
+  $("#qconf").classList.remove("hidden"); $("#qhint").classList.remove("hidden");
+  const isShort = q.type === "short";
+  $("#qshort").classList.toggle("hidden", !isShort); $("#qtext").value = "";
+  $("#qchoices").innerHTML = isShort ? "" : Object.entries(q.choices).map(([k,v]) =>
+    `<button class="choice" data-k="${k}"><b>${k}</b><span>${md(v)}</span></button>`).join("");
+  document.querySelectorAll(".choice").forEach(b => b.onclick = () => toggle(b.dataset.k));
+  if (isShort) $("#qtext").focus();
+}
+
+function toggle(k) {
+  const q = S.questions[S.i];
+  if (S.answered || !q.choices || !(k in q.choices)) return;
+  if (q.type === "single") S.selected = new Set([k]);
+  else if (S.selected.has(k)) S.selected.delete(k);
+  else if (S.selected.size < q.pick) S.selected.add(k);
+  document.querySelectorAll(".choice").forEach(b => b.classList.toggle("selected", S.selected.has(b.dataset.k)));
+}
+
+async function submit(confidence) {
+  const q = S.questions[S.i];
+  if (S.answered) return;
+  const text = $("#qtext").value.trim();
+  if (q.type === "short" ? !text : S.selected.size === 0) { $("#qhint").textContent = "먼저 답을 고르세요."; return; }
+  if (q.type === "multi" && S.selected.size !== q.pick) { $("#qhint").textContent = `${q.pick}개를 골라야 합니다.`; return; }
+  S.answered = true; clearInterval(timer);
+  const body = {session: S.session, mode: S.mode, qid: q.id, selected: [...S.selected], text: q.type === "short" ? text : null,
+                confidence, seconds: Math.round((Date.now()-S.t0)/1000)};
+  let r;
+  try { r = await api(`/api/topics/${S.slug}/answer`, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)}); }
+  catch (e) { S.answered = false; $("#qhint").textContent = "저장 실패: " + e.message; return; }
+  S.results.push({q, r, confidence, selected: body.selected});
+  document.querySelectorAll(".choice").forEach(b => {
+    const k = b.dataset.k;
+    if (r.answer.includes(k)) b.classList.add("correct");
+    else if (S.selected.has(k)) b.classList.add("wrong");
+  });
+  const wrongPicked = body.selected.filter(k => !r.answer.includes(k));
+  const why = wrongPicked.filter(k => r.why_wrong[k]).map(k => `<div><b>${k}</b>: ${md(r.why_wrong[k])}</div>`).join("");
+  $("#qfb").innerHTML = `<div class="fb ${r.correct ? "ok" : "bad"}">
+    <h3>${r.correct ? "정답" : "오답"} · 정답 ${esc(r.answer.join(", "))}</h3>
+    ${r.explanation ? md(r.explanation) : '<span class="muted">해설이 아직 없습니다. 오답노트 정리 때 채워집니다.</span>'}
+    ${why ? `<div style="margin-top:8px">${why}</div>` : ""}
+    ${r.flag ? `<div class="muted" style="margin-top:8px">⚠ ${esc(r.flag)}</div>` : ""}
+    <div class="muted" style="margin-top:8px">개념: ${esc(r.concepts.join(", ") || "-")} · 다음 복습 ${esc(r.next_due)}</div></div>`;
+  $("#qconf").classList.add("hidden"); $("#qhint").classList.add("hidden");
+  $("#next").classList.remove("hidden"); $("#next").focus();
+}
+
+function next() {
+  if (!S.answered) return;
+  S.i++;
+  if (S.i >= S.questions.length) finish(); else render();
+}
+
+function finish() {
+  clearInterval(timer);
+  const n = S.results.length, ok = S.results.filter(x => x.r.correct).length;
+  const rows = S.results.map(x => `<tr><td>${x.q.id}</td><td>${x.r.correct ? "✓" : "✗"}</td>
+    <td>${esc(x.selected.join(",") || "-")} → ${esc(x.r.answer.join(","))}</td>
+    <td>${({sure:"확실",unsure:"애매",guess:"찍음"})[x.confidence]}</td></tr>`).join("");
+  $("#done").innerHTML = `<div class="card"><h2 style="margin-top:0">${esc(S.title)} — ${ok} / ${n}</h2>
+    <p class="muted">기록이 저장되었습니다. Claude Code에서 <b>"오답노트 정리해줘"</b>라고 하면 오답노트·헷갈리는 개념이 갱신됩니다.</p>
+    ${n ? `<table><tr><th>문항</th><th></th><th>내 답 → 정답</th><th>확신도</th></tr>${rows}</table>` : ""}
+    <div class="row" style="margin-top:16px"><button class="primary" id="again">처음으로</button></div></div>`;
+  show("done"); $("#again").onclick = home;
+}
+
+function show(id) { ["home","quiz","done"].forEach(s => $("#"+s).classList.toggle("hidden", s !== id)); }
+
+$("#qconf").onclick = e => { const b = e.target.closest("button"); if (b) submit(b.dataset.c); };
+$("#next").onclick = next;
+$("#quit").onclick = () => { if (S.results.length === 0 || confirm("여기까지 끝낼까요? 푼 문항은 이미 저장되었습니다.")) finish(); };
+document.addEventListener("keydown", e => {
+  if ($("#quiz").classList.contains("hidden")) return;
+  const typing = document.activeElement === $("#qtext");
+  if (e.key === "Enter") { e.preventDefault(); if (S.answered) next(); else if (typing) $("#qhint").textContent = "확신도를 고르세요: 1 확실 · 2 애매 · 3 찍음"; return; }
+  if (typing) return;
+  if (["1","2","3"].includes(e.key)) submit(["sure","unsure","guess"][+e.key-1]);
+  else if (/^[a-h]$/i.test(e.key)) toggle(e.key.toUpperCase());
+});
+home().catch(e => $("#topics").innerHTML = `<div class="card">오류: ${esc(e.message)}</div>`);
+</script>
+</body>
+</html>
