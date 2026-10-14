@@ -613,11 +613,15 @@ name = "study-harness"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "mkdocs" },
     { name = "mkdocs-material" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "mkdocs-material", specifier = ">=9.5" }]
+requires-dist = [
+    { name = "mkdocs", specifier = ">=1.6,<2" },
+    { name = "mkdocs-material", specifier = ">=9.5,<10" },
+]
 
 [[package]]
 name = "urllib3"

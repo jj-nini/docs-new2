@@ -30,12 +30,12 @@
     {
       "id": "6",
       "title": "MkDocs 사이트 + Pages 워크플로",
-      "status": "doing"
+      "status": "done"
     },
     {
       "id": "7",
       "title": "E2E 검증 + 문서화",
-      "status": "todo"
+      "status": "doing"
     }
   ],
   "notes": [

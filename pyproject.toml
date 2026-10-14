@@ -4,7 +4,8 @@ version = "0.1.0"
 description = "키워드/URL → 로컬 퀴즈 + GitHub Pages 학습 노트"
 requires-python = ">=3.11"
 dependencies = [
-    "mkdocs-material>=9.5",
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.5,<10",
 ]
 
 [tool.uv]
