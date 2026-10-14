@@ -40,6 +40,7 @@
   ],
   "notes": [
     "study.py CLI 계약: serve, new-topic, add-questions, validate, import-md, record, stats [--json], due — 에이전트 문서가 이 이름을 씀",
-    "샘플 import 결과: 226/236 (#23,80,81,134,138,224,231 원본 양쪽 다 깨짐, 3개 중복). 해설은 원본에 없음"
+    "샘플 import 결과: 226/236 (#23,80,81,134,138,224,231 원본 양쪽 다 깨짐, 3개 중복). 해설은 원본에 없음",
+    "mkdocs -q는 strict 경고를 삼키고 exit 0 → -q 쓰지 말 것"
   ]
 }

@@ -79,7 +79,7 @@ description: "학습 서비스 오케스트레이터. 학습 주제(키워드·U
 - 그 외에는 examiner가 지정 문항 수만큼 출제한다.
 
 ### A-3. 마무리
-1. `uv run mkdocs build --strict -q`로 링크·앵커 오류를 확인하고 고친다.
+1. `uv run mkdocs build --strict`로 링크·앵커 오류를 확인하고 고친다.
 2. 사용자에게 보고: 개념 수, 혼동 그룹 수, 문항 수, 그리고 **다음 행동**:
    - 웹으로 풀기: `python3 tools/study.py serve` → http://localhost:8765
    - 여기서 풀기: "대화로 10문제 내줘"
@@ -108,7 +108,7 @@ description: "학습 서비스 오케스트레이터. 학습 주제(키워드·U
 3. error-analyst 호출 → 오답노트·학습 현황 갱신. 보고에서 (a) 혼동 증거, (b) 결손 개념을 받는다.
 4. (a)가 있으면 confusion-analyst에게 넘겨 `confusions.md`를 갱신한다. 결손 개념이 개념 노트에서 빈약하면 concept-writer에게 해당 앵커 보강을 맡긴다 (둘은 병렬).
 5. (b)가 3개 이상이면 "약점 개념으로 N문항 추가 출제할까요?"를 제안한다 (D).
-6. `uv run mkdocs build --strict -q` 확인 후 F를 제안한다.
+6. `uv run mkdocs build --strict` 확인 후 F를 제안한다.
 
 ## D. 추가 출제
 examiner에게 대상 개념/영역, 문항 수, 난이도를 넘긴다. 약점 기반이면 `stats --json`의 `weak_concepts`를 함께 넘긴다.
@@ -117,7 +117,7 @@ examiner에게 대상 개념/영역, 문항 수, 난이도를 넘긴다. 약점 
 concept-writer 또는 confusion-analyst를 범위를 좁혀 호출한다. 앵커 ID는 바꾸지 않는다.
 
 ## F. 발행
-1. `uv run mkdocs build --strict -q` 통과를 확인한다.
+1. `uv run mkdocs build --strict` 통과를 확인한다.
 2. `git status --short`로 바뀐 파일이 `docs/`와 설정 파일뿐인지 확인한다. `local/`·`sources/`가 보이면 중단하고 .gitignore를 고친다.
 3. `git add docs mkdocs.yml && git commit -m "notes(<slug>): <요약>"`
 4. push는 사용자가 원할 때만 한다: `git push origin main`. push 후 GitHub Actions가 Pages로 배포한다 (`https://<user>.github.io/<repo>/`).

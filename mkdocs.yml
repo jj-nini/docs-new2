@@ -52,3 +52,10 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+
+# --strict에서 깨진 링크·앵커를 실패로 처리 (노트 간 concepts.md#<id> 링크 검증)
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
