@@ -1,0 +1,27 @@
+{
+  "task": "aws-ans-c01",
+  "goal": "ANS-C01 기출로 개념·혼동 노트와 문제 은행 생성",
+  "steps": [
+    {
+      "id": "1",
+      "title": "주제 생성+기출 import",
+      "status": "done"
+    },
+    {
+      "id": "2",
+      "title": "주제 분석(개념 맵)",
+      "status": "doing"
+    },
+    {
+      "id": "3",
+      "title": "개념·혼동 노트·문제 태깅(30) 병렬",
+      "status": "todo"
+    },
+    {
+      "id": "4",
+      "title": "strict 빌드 검증·커밋",
+      "status": "todo"
+    }
+  ],
+  "notes": []
+}

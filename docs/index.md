@@ -6,7 +6,7 @@
 ## 주제
 
 <!-- topics:start -->
-아직 주제가 없습니다.
+- [AWS Certified Advanced Networking – Specialty (ANS-C01)](topics/aws-ans-c01/index.md)
 <!-- topics:end -->
 
 ## 노트 읽는 법
